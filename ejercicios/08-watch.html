@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>08 · Watch</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+</head>
+<body>
+<!--
+==========================================================================
+ EJERCICIO 08 · Bloc de notas que no se borra (watch + localStorage)
+==========================================================================
+
+ QUÉ VAS A APRENDER
+   - Ejecutar código cada vez que un dato cambia: watch()
+   - Guardar datos en el navegador para que sobrevivan al recargar
+
+ CÓMO FUNCIONA
+   computed  CALCULA un valor nuevo a partir de otros.
+   watch     HACE ALGO cuando un dato cambia (guardar, avisar, llamar a una API...).
+
+     watch(busqueda, (nuevo, viejo) => {
+       console.log(`busqueda cambió de "${viejo}" a "${nuevo}"`)
+     })
+
+   Si observás un array u objeto y querés enterarte de cambios ADENTRO
+   (un push, una propiedad que cambia), agregá { deep: true }:
+     watch(lista, () => { ... }, { deep: true })
+
+   localStorage es una mini base de datos del navegador que sobrevive al F5:
+     localStorage.setItem('clave', 'texto')   guarda (solo strings)
+     localStorage.getItem('clave')            lee (da null si no existe)
+     JSON.stringify(objeto)                   convierte un objeto/array en texto
+     JSON.parse(texto)                        convierte el texto de nuevo en objeto/array
+
+   Mirá el watch de ejemplo y abrí la consola (F12) mientras escribís.
+
+ TU TAREA
+   TODO 1: Hacé un watch sobre `texto` que lo guarde en localStorage con la
+           clave 'bloc-texto'.
+   TODO 2: Hacé que el ref `texto`, en lugar de arrancar en '', arranque con lo
+           que haya guardado en localStorage (o '' si no hay nada).
+           (pista: localStorage.getItem('bloc-texto') ?? '')
+           Escribí algo, recargá la página (F5) y comprobá que sigue ahí. 🎉
+   TODO 3: Mostrá "Guardado ✓" durante 1,5 segundos cada vez que se guarda.
+           (pista: el ref `guardado` true/false + setTimeout(() => {...}, 1500))
+   TODO 4: Hacé que la lista de `pendientes` también se guarde y se cargue
+           (clave 'bloc-pendientes'). Vas a necesitar JSON.stringify / JSON.parse.
+           Probá primero SIN { deep: true }: agregá un pendiente, tildalo y recargá.
+           ¿Se guardó el tilde? Después agregale deep y compará.
+
+ CÓMO SABÉS QUE ESTÁ BIEN
+   Escribís, tildás pendientes, recargás la página... y todo sigue igual.
+   (Podés ver lo guardado en F12, pestaña Aplicación/Almacenamiento, Local Storage.)
+
+ DESAFÍO EXTRA
+   Un watch sobre `texto` que, si el texto incluye la palabra "vue", escriba
+   💚 en la consola.
+==========================================================================
+-->
+
+  <div id="app">
+    <h1>08 · Bloc de notas</h1>
+    <p>Reaccionar a cambios con watch() y guardar en localStorage</p>
+
+    <div class="caja">
+      <label for="texto">Notas rápidas</label>
+      <textarea id="texto" v-model="texto" rows="6" class="ancho" placeholder="Escribí algo y recargá la página..."></textarea>
+      <!-- TODO 3: "Guardado ✓" -->
+    </div>
+
+    <div class="caja">
+      <h2>Pendientes</h2>
+      <div class="fila">
+        <input v-model="nuevoPendiente" @keyup.enter="agregarPendiente" placeholder="Nuevo pendiente">
+        <button @click="agregarPendiente">Agregar</button>
+      </div>
+      <ul class="lista">
+        <li v-for="p in pendientes" :key="p.id">
+          <label class="en-linea">
+            <input type="checkbox" v-model="p.hecho">
+            <span :class="{ tachado: p.hecho }">{{ p.texto }}</span>
+          </label>
+        </li>
+      </ul>
+    </div>
+
+    <p class="pista">
+      Para empezar de cero:
+      <button class="secundario" @click="borrarTodo">Borrar lo guardado</button>
+    </p>
+  </div>
+
+  <script>
+    const { createApp, ref, watch } = Vue
+
+    createApp({
+      setup() {
+        // TODO 2: que arranque con lo guardado
+        const texto = ref('')
+        const guardado = ref(false)
+
+        // Ejemplo de watch: mirá la consola mientras escribís
+        watch(texto, (nuevo, viejo) => {
+          console.log(`El texto pasó de ${viejo.length} a ${nuevo.length} caracteres`)
+        })
+
+        // TODO 1: watch(texto, ...) que guarde en localStorage
+
+        // TODO 3: mostrar "Guardado ✓" un ratito
+
+        // TODO 4: cargar y guardar los pendientes
+        const pendientes = ref([
+          { id: 1, texto: 'Terminar el ejercicio 08', hecho: false },
+        ])
+        const nuevoPendiente = ref('')
+
+        function agregarPendiente() {
+          const t = nuevoPendiente.value.trim()
+          if (!t) return
+          pendientes.value.push({ id: Date.now(), texto: t, hecho: false })
+          nuevoPendiente.value = ''
+        }
+
+        function borrarTodo() {
+          localStorage.removeItem('bloc-texto')
+          localStorage.removeItem('bloc-pendientes')
+          location.reload()
+        }
+
+        return { texto, guardado, pendientes, nuevoPendiente, agregarPendiente, borrarTodo }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

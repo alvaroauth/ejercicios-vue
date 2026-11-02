@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>11 · Eventos con emit</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+  <style>
+    .opcion {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      border: 1px solid var(--borde);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin: 8px 0;
+    }
+    .opcion .sabor { flex: 1; font-weight: 600; }
+    .opcion .votos { color: var(--suave); }
+  </style>
+</head>
+<body>
+<!--
+==========================================================================
+ EJERCICIO 11 · Votación de helados (eventos con emit)
+==========================================================================
+
+ QUÉ VAS A APRENDER
+   - Cómo un componente hijo le avisa algo al padre: emit
+
+ CÓMO FUNCIONA
+   Los datos BAJAN con props   (padre → hijo)
+   Los avisos SUBEN con eventos (hijo → padre)
+
+   En el hijo declarás qué eventos puede emitir, y los emitís:
+     app.component('boton-like', {
+       emits: ['like'],
+       setup(props, { emit }) {
+         function click() {
+           emit('like')              // o con un dato: emit('like', 5)
+         }
+         return { click }
+       },
+       template: `<button @click="click">👍</button>`
+     })
+   (en el template del hijo también podés hacer directo: @click="$emit('like')")
+
+   En el padre escuchás el evento igual que un click:
+     <boton-like @like="sumarLike"></boton-like>
+     <boton-like @like="likes++"></boton-like>
+   Si el evento trae un dato, la función del padre lo recibe como argumento:
+     emit('like', 5)   llega a   function sumarLike(cantidad) { ... }
+
+   ⚠️ Con templates escritos en el HTML, nombres de eventos en kebab-case:
+      emit('borrar-item') y @borrar-item
+
+   Fijate en la idea clave: los hijos NUNCA modifican `sabores` directamente.
+   Solo avisan "me votaron", y el padre, que es el dueño de los datos, decide.
+
+ TU TAREA
+   El componente 'opcion-voto' ya muestra un sabor y sus votos (los recibe por props).
+   TODO 1: En 'opcion-voto', hacé que el botón "Votar" emita el evento 'votar'
+           (acordate de declararlo en emits).
+   TODO 2: En el padre, escuchá @votar y sumale 1 a los votos de ESE sabor.
+           (pista: @votar="sumarVoto(sabor.id)"  y en sumarVoto usá .find())
+   TODO 3: Agregá en el hijo un botón "Quitar" que emita 'quitar', y que el
+           padre saque ese sabor de la lista.
+   TODO 4: Creá un componente nuevo 'nuevo-sabor' con un input y un botón
+           "Agregar". Al apretarlo, emite 'agregar' CON el nombre escrito
+           (emit('agregar', texto)) y vacía su input. El padre recibe el nombre
+           y lo agrega a `sabores` con 0 votos.
+           (el texto del input es estado propio del hijo: un ref en su setup)
+   TODO 5: En el padre, un computed `ganador` con el sabor más votado.
+           Mostrá "🏆 Va ganando: ___" o "Todavía no hay votos".
+
+ CÓMO SABÉS QUE ESTÁ BIEN
+   Votás, quitás y agregás sabores, y el ganador se actualiza solo.
+
+ DESAFÍO EXTRA
+   Que 'opcion-voto' reciba también una prop `porcentaje` (calculala en el
+   padre) y muestre una barrita con :style, como en el ejercicio 06.
+==========================================================================
+-->
+
+  <div id="app">
+    <h1>11 · Votación de helados 🍦</h1>
+    <p>Los hijos le avisan al padre con emit()</p>
+
+    <!-- TODO 4: acá va <nuevo-sabor> -->
+
+    <!-- TODO 2 y 3: escuchá los eventos del hijo -->
+    <opcion-voto
+      v-for="sabor in sabores"
+      :key="sabor.id"
+      :nombre="sabor.nombre"
+      :votos="sabor.votos"
+    ></opcion-voto>
+
+    <!-- TODO 5 -->
+    <p class="caja">🏆 ...</p>
+  </div>
+
+  <script>
+    const { createApp, ref, computed } = Vue
+
+    const app = createApp({
+      setup() {
+        const sabores = ref([
+          { id: 1, nombre: 'Dulce de leche', votos: 0 },
+          { id: 2, nombre: 'Chocolate', votos: 0 },
+          { id: 3, nombre: 'Limón', votos: 0 },
+          { id: 4, nombre: 'Frutilla', votos: 0 },
+        ])
+
+        function sumarVoto(id) {
+          // TODO 2
+        }
+
+        // TODO 3: function quitar(id) { ... }
+
+        // TODO 4: function agregarSabor(nombre) { ... }
+
+        // TODO 5: const ganador = computed(() => ...)
+
+        return { sabores, sumarVoto }
+      }
+    })
+
+    app.component('opcion-voto', {
+      props: {
+        nombre: String,
+        votos: Number,
+      },
+      // TODO 1: emits: [...]
+      template: `
+        <div class="opcion">
+          <span class="sabor">{{ nombre }}</span>
+          <span class="votos">{{ votos }} {{ votos === 1 ? 'voto' : 'votos' }}</span>
+          <button>Votar</button>
+          <!-- TODO 3: botón Quitar -->
+        </div>
+      `
+    })
+
+    // TODO 4: app.component('nuevo-sabor', { ... })
+
+    app.mount('#app')
+  </script>
+</body>
+</html>

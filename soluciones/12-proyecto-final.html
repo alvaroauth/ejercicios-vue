@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>12 · Proyecto final (solución)</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+  <style>
+    .filtros { display: flex; gap: 6px; margin: 12px 0; }
+    .filtros button.activo { background: var(--azul-vue); color: white; border-color: var(--azul-vue); }
+    .tarea { gap: 10px; }
+    .tarea .texto { flex: 1; cursor: text; }
+    .tarea input.editar { flex: 1; }
+    .pie { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; color: var(--suave); }
+  </style>
+</head>
+<body>
+  <!-- SOLUCIÓN del proyecto final (incluye el desafío de editar) -->
+
+  <div id="app">
+    <h1>Mis tareas</h1>
+    <p>Proyecto final</p>
+
+    <div class="caja">
+      <div class="fila">
+        <input v-model="nuevaTarea" @keyup.enter="agregar" placeholder="¿Qué tenés que hacer?">
+        <button @click="agregar">Agregar</button>
+      </div>
+
+      <div class="filtros">
+        <button
+          v-for="f in filtros"
+          :key="f.valor"
+          class="secundario"
+          :class="{ activo: filtro === f.valor }"
+          @click="filtro = f.valor"
+        >{{ f.texto }}</button>
+      </div>
+
+      <ul class="lista">
+        <!-- $event es el dato que mandó el hijo con emit('editar', texto) -->
+        <item-tarea
+          v-for="t in tareasVisibles"
+          :key="t.id"
+          :tarea="t"
+          @alternar="alternar(t.id)"
+          @borrar="borrar(t.id)"
+          @editar="editar(t.id, $event)"
+        ></item-tarea>
+      </ul>
+
+      <p v-if="tareas.length === 0" class="pista">No hay tareas. ¡Agregá la primera!</p>
+      <p v-else-if="tareasVisibles.length === 0" class="pista">No hay tareas en este filtro.</p>
+
+      <div v-if="tareas.length > 0" class="pie">
+        <span v-if="pendientes > 0">
+          Quedan {{ pendientes }} {{ pendientes === 1 ? 'tarea pendiente' : 'tareas pendientes' }}
+        </span>
+        <span v-else>¡Todo listo! 🎉</span>
+        <button v-if="hayHechas" class="secundario" @click="borrarHechas">Borrar hechas</button>
+      </div>
+    </div>
+
+    <p class="pista">Tip: doble click sobre una tarea para editarla.</p>
+  </div>
+
+  <script>
+    const { createApp, ref, computed, watch, nextTick } = Vue
+
+    const CLAVE = 'proyecto-final-tareas'
+
+    const app = createApp({
+      setup() {
+        // JSON.parse(null) da null, y ?? lo reemplaza por []
+        const tareas = ref(JSON.parse(localStorage.getItem(CLAVE)) ?? [])
+        const nuevaTarea = ref('')
+
+        const filtro = ref('todas')
+        const filtros = [
+          { valor: 'todas', texto: 'Todas' },
+          { valor: 'pendientes', texto: 'Pendientes' },
+          { valor: 'hechas', texto: 'Hechas' },
+        ]
+
+        const pendientes = computed(() => tareas.value.filter(t => !t.hecha).length)
+        const hayHechas = computed(() => tareas.value.some(t => t.hecha))
+
+        const tareasVisibles = computed(() => {
+          if (filtro.value === 'pendientes') return tareas.value.filter(t => !t.hecha)
+          if (filtro.value === 'hechas') return tareas.value.filter(t => t.hecha)
+          return tareas.value
+        })
+
+        watch(tareas, (nuevas) => {
+          localStorage.setItem(CLAVE, JSON.stringify(nuevas))
+        }, { deep: true })
+
+        function agregar() {
+          const texto = nuevaTarea.value.trim()
+          if (!texto) return
+          tareas.value.push({ id: Date.now(), texto, hecha: false })
+          nuevaTarea.value = ''
+        }
+
+        function buscar(id) {
+          return tareas.value.find(t => t.id === id)
+        }
+
+        function alternar(id) {
+          const tarea = buscar(id)
+          tarea.hecha = !tarea.hecha
+        }
+
+        function editar(id, texto) {
+          buscar(id).texto = texto
+        }
+
+        function borrar(id) {
+          tareas.value = tareas.value.filter(t => t.id !== id)
+        }
+
+        function borrarHechas() {
+          tareas.value = tareas.value.filter(t => !t.hecha)
+        }
+
+        return {
+          tareas, nuevaTarea, filtro, filtros, pendientes, hayHechas, tareasVisibles,
+          agregar, alternar, editar, borrar, borrarHechas,
+        }
+      }
+    })
+
+    app.component('item-tarea', {
+      props: {
+        tarea: { type: Object, required: true },
+      },
+      emits: ['alternar', 'borrar', 'editar'],
+      setup(props, { emit }) {
+        // Estado propio de cada item: si se está editando y el texto nuevo
+        const editando = ref(false)
+        const textoEditado = ref('')
+        const campo = ref(null) // se conecta con ref="campo" en el template
+
+        async function empezarEdicion() {
+          textoEditado.value = props.tarea.texto
+          editando.value = true
+          await nextTick()     // esperamos a que Vue dibuje el input...
+          campo.value.focus()  // ...para poder poner el cursor adentro
+        }
+
+        function guardarEdicion() {
+          if (!editando.value) return // ya se guardó o canceló (el blur llega después)
+          const texto = textoEditado.value.trim()
+          if (texto) emit('editar', texto)
+          editando.value = false
+        }
+
+        function cancelarEdicion() {
+          editando.value = false
+        }
+
+        return { editando, textoEditado, campo, empezarEdicion, guardarEdicion, cancelarEdicion }
+      },
+      template: `
+        <li class="tarea">
+          <input type="checkbox" :checked="tarea.hecha" @change="$emit('alternar')">
+          <input
+            v-if="editando"
+            ref="campo"
+            v-model="textoEditado"
+            class="editar"
+            @keyup.enter="guardarEdicion"
+            @keyup.esc="cancelarEdicion"
+            @blur="guardarEdicion"
+          >
+          <span v-else class="texto" :class="{ tachado: tarea.hecha }" @dblclick="empezarEdicion">
+            {{ tarea.texto }}
+          </span>
+          <button class="peligro" @click="$emit('borrar')">✕</button>
+        </li>
+      `
+    })
+
+    app.mount('#app')
+  </script>
+</body>
+</html>

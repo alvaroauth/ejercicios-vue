@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>02 · Contador (solución)</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+</head>
+<body>
+  <!-- SOLUCIÓN del ejercicio 02 (incluye los desafíos extra) -->
+
+  <div id="app">
+    <h1>02 · Contador</h1>
+    <p>Eventos con @click y la regla del .value</p>
+
+    <div class="caja">
+      <button class="secundario" @click="saludar">Saludar</button>
+      <span>{{ saludo }}</span>
+    </div>
+
+    <div class="caja centrado">
+      <p class="numero-grande">{{ contador }}</p>
+      <p>{{ contador % 2 === 0 ? 'Es par' : 'Es impar' }}</p>
+
+      <button @click="decrementar">−1</button>
+      <button @click="incrementar">+1</button>
+      <button @click="sumar(5)">+5</button>
+      <button @click="sumar(10)">+10</button>
+      <!-- Se pueden poner varias expresiones separadas por ; -->
+      <button class="secundario" @click="contador = 0; clicks++">Reiniciar</button>
+
+      <p class="pista">Clicks totales: {{ clicks }}</p>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref } = Vue
+
+    createApp({
+      setup() {
+        const saludo = ref('')
+        function saludar() {
+          saludo.value = '¡Hola! 👋'
+        }
+
+        const contador = ref(0)
+        const clicks = ref(0) // extra
+
+        function incrementar() {
+          contador.value++
+          clicks.value++
+        }
+
+        function decrementar() {
+          // extra: Math.max elige el mayor, así nunca baja de 0
+          contador.value = Math.max(0, contador.value - 1)
+          clicks.value++
+        }
+
+        function sumar(cantidad) {
+          contador.value += cantidad
+          clicks.value++
+        }
+
+        return { saludo, saludar, contador, clicks, incrementar, decrementar, sumar }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

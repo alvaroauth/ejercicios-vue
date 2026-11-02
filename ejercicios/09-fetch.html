@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>09 · Fetch</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+</head>
+<body>
+<!--
+==========================================================================
+ EJERCICIO 09 · Datos de internet (onMounted + fetch)
+==========================================================================
+
+ QUÉ VAS A APRENDER
+   - El ciclo de vida: hacer cosas cuando la app aparece en la página
+   - Pedir datos a una API con fetch
+   - Mostrar los estados "cargando", "error" y "listo"
+
+ CÓMO FUNCIONA
+   Cada componente tiene un ciclo de vida: se crea, aparece en la página
+   (se "monta"), se actualiza y, a veces, se va (se "desmonta").
+   Te podés enganchar a esos momentos:
+     onMounted(() => { ... })      cuando ya está en la página: ideal para pedir datos
+     onUnmounted(() => { ... })    cuando se va: ideal para limpiar timers
+   Mirá el reloj de ejemplo, usa los dos.
+
+   Pedir datos con fetch + async/await:
+     async function cargar() {
+       const respuesta = await fetch('https://...')   // esperá la respuesta
+       const datos = await respuesta.json()           // convertila a objeto JS
+     }
+
+   Siempre que pedís datos hay TRES situaciones que mostrar:
+     cargando   "Cargando..."
+     error      "Algo salió mal"
+     listo      los datos
+
+   Vamos a usar https://jsonplaceholder.typicode.com, una API de prueba gratis.
+   Abrí https://jsonplaceholder.typicode.com/users en el navegador para ver qué devuelve.
+
+ TU TAREA
+   TODO 1: Llamá a cargarUsuarios() en onMounted.
+   TODO 2: Completá cargarUsuarios(): poné `cargando` en true, pedí
+           API + '/users' con fetch, guardá el resultado en `usuarios`
+           y al final poné `cargando` en false.
+   TODO 3: En el template: mientras cargando sea true mostrá "Cargando...";
+           cuando termine, la lista de usuarios (nombre y email) con v-for.
+   TODO 4: Errores. Envolvé el fetch en try / catch / finally:
+             try      el fetch
+             catch    guardá un mensaje en `error`
+             finally  cargando en false (finally se ejecuta SIEMPRE)
+           Mostrá el error en el template. Probalo cambiando la URL por
+           una que no existe, por ejemplo API + '/usuariosss'.
+           ⚠️ fetch NO tira error con un 404: revisá respuesta.ok y, si es
+           false, tirá vos el error: throw new Error('Error ' + respuesta.status)
+   TODO 5: Al hacer click en un usuario, llamá a verTareas(u) y mostrá sus tareas,
+           pidiéndolas a API + '/todos?userId=' + usuario.id
+           Cada tarea tiene title y completed: mostrá ✅ o ⬜ según completed.
+           La caja de tareas solo tiene que aparecer si hay un usuarioElegido.
+
+ CÓMO SABÉS QUE ESTÁ BIEN
+   Al abrir la página ves "Cargando..." un instante y después 10 usuarios.
+   (Para ver el "Cargando..." más tiempo: F12, pestaña Red, y elegí "3G lento".)
+
+ DESAFÍO EXTRA
+   - Un botón "Reintentar" que aparezca junto al mensaje de error.
+   - Resaltá el usuario elegido (clase "elegido", ya existe en estilos.css).
+==========================================================================
+-->
+
+  <div id="app">
+    <h1>09 · Datos de internet</h1>
+    <p>onMounted() + fetch()</p>
+
+    <!-- Ejemplo: reloj que arranca en onMounted -->
+    <p class="pista">🕒 {{ hora }}</p>
+
+    <div class="caja">
+      <h2>Usuarios</h2>
+      <!-- TODO 3: "Cargando..." o la lista -->
+      <!-- TODO 4: el error -->
+      <!-- TODO 5: @click en cada usuario -->
+      <p class="pista">(acá van a aparecer los usuarios)</p>
+    </div>
+
+    <!-- TODO 5: esta caja solo tiene que aparecer si hay un usuarioElegido -->
+    <div class="caja">
+      <h2>Tareas</h2>
+      <p class="pista">Hacé click en un usuario para ver sus tareas.</p>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref, onMounted, onUnmounted } = Vue
+
+    const API = 'https://jsonplaceholder.typicode.com'
+
+    createApp({
+      setup() {
+        // --- Ejemplo: un reloj ---
+        const hora = ref(new Date().toLocaleTimeString())
+        let intervalo = null
+
+        onMounted(() => {
+          // La app ya está en la página: arrancamos el reloj
+          intervalo = setInterval(() => {
+            hora.value = new Date().toLocaleTimeString()
+          }, 1000)
+        })
+
+        onUnmounted(() => {
+          // Si este componente desapareciera, frenamos el reloj
+          // (si no, seguiría corriendo para siempre en segundo plano)
+          clearInterval(intervalo)
+        })
+
+        // --- Usuarios ---
+        const usuarios = ref([])
+        const cargando = ref(false)
+        const error = ref('')
+
+        async function cargarUsuarios() {
+          // TODO 2 y 4
+        }
+
+        // TODO 1: onMounted(...)
+
+        // --- Tareas de un usuario ---
+        const usuarioElegido = ref(null)
+        const tareas = ref([])
+
+        async function verTareas(usuario) {
+          // TODO 5
+        }
+
+        return { hora, usuarios, cargando, error, cargarUsuarios, usuarioElegido, tareas, verTareas }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

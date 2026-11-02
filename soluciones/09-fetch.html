@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>09 · Fetch (solución)</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+</head>
+<body>
+  <!-- SOLUCIÓN del ejercicio 09 (incluye los desafíos extra) -->
+
+  <div id="app">
+    <h1>09 · Datos de internet</h1>
+    <p>onMounted() + fetch()</p>
+
+    <p class="pista">🕒 {{ hora }}</p>
+
+    <div class="caja">
+      <h2>Usuarios</h2>
+      <p v-if="cargando">Cargando...</p>
+      <p v-else-if="error" class="error">
+        {{ error }}
+        <button class="secundario" @click="cargarUsuarios">Reintentar</button>
+      </p>
+      <ul v-else class="lista">
+        <li
+          v-for="u in usuarios"
+          :key="u.id"
+          class="clickeable"
+          :class="{ elegido: usuarioElegido && usuarioElegido.id === u.id }"
+          @click="verTareas(u)"
+        >
+          <span>
+            <strong>{{ u.name }}</strong><br>
+            <span class="pista">{{ u.email }}</span>
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="caja" v-if="usuarioElegido">
+      <h2>Tareas de {{ usuarioElegido.name }}</h2>
+      <p v-if="cargandoTareas">Cargando...</p>
+      <ul v-else class="lista">
+        <li v-for="t in tareas" :key="t.id">
+          <span>{{ t.completed ? '✅' : '⬜' }} {{ t.title }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref, onMounted, onUnmounted } = Vue
+
+    const API = 'https://jsonplaceholder.typicode.com'
+
+    createApp({
+      setup() {
+        const hora = ref(new Date().toLocaleTimeString())
+        let intervalo = null
+
+        onMounted(() => {
+          intervalo = setInterval(() => {
+            hora.value = new Date().toLocaleTimeString()
+          }, 1000)
+        })
+
+        onUnmounted(() => {
+          clearInterval(intervalo)
+        })
+
+        const usuarios = ref([])
+        const cargando = ref(false)
+        const error = ref('')
+
+        async function cargarUsuarios() {
+          cargando.value = true
+          error.value = ''
+          try {
+            const respuesta = await fetch(API + '/users')
+            // fetch solo falla si no hay red; un 404 o 500 hay que chequearlo a mano
+            if (!respuesta.ok) throw new Error('Error ' + respuesta.status)
+            usuarios.value = await respuesta.json()
+          } catch (e) {
+            error.value = 'No se pudieron cargar los usuarios (' + e.message + ')'
+          } finally {
+            cargando.value = false
+          }
+        }
+
+        onMounted(cargarUsuarios)
+
+        const usuarioElegido = ref(null)
+        const tareas = ref([])
+        const cargandoTareas = ref(false)
+
+        async function verTareas(usuario) {
+          usuarioElegido.value = usuario
+          cargandoTareas.value = true
+          try {
+            const respuesta = await fetch(API + '/todos?userId=' + usuario.id)
+            tareas.value = await respuesta.json()
+          } finally {
+            cargandoTareas.value = false
+          }
+        }
+
+        return {
+          hora, usuarios, cargando, error, cargarUsuarios,
+          usuarioElegido, tareas, cargandoTareas, verTareas,
+        }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

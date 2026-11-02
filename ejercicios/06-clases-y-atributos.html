@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>06 · Clases y atributos</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+  <style>
+    .panel { padding: 16px; border-radius: 8px; background: #eef1f4; transition: all 0.3s; }
+    .panel.oscuro { background: #1e2a36; color: #e8edf2; }
+
+    .barra { height: 18px; background: #e5e7eb; border-radius: 9px; overflow: hidden; margin-bottom: 10px; }
+    .relleno { height: 100%; width: 0; background: #3b82f6; transition: width 0.3s, background 0.3s; }
+    .relleno.completa { background: var(--verde); }
+
+    .texto-grande { font-size: 1.6rem; font-weight: 700; margin: 8px 0 0; }
+  </style>
+</head>
+<body>
+<!--
+==========================================================================
+ EJERCICIO 06 · Clases y atributos (v-bind)
+==========================================================================
+
+ QUÉ VAS A APRENDER
+   - Poner datos en atributos HTML con v-bind (forma corta: dos puntos)
+   - Clases CSS condicionales con :class
+   - Estilos dinámicos con :style
+
+ CÓMO FUNCIONA
+   Las {{ }} sirven para TEXTO. Adentro de un atributo NO funcionan:
+     <img src="{{ url }}">          ❌
+     <img :src="url">               ✅  (es la forma corta de v-bind:src)
+
+   Con los dos puntos, lo que va entre comillas es JavaScript:
+     <a :href="link">               el valor de la variable link
+     <button :disabled="texto === ''">     true o false según la condición
+
+   :class acepta un objeto { claseCSS: condición }:
+     <div :class="{ activo: estaActivo, error: hayError }">
+     tiene la clase "activo" solo si estaActivo es true, etc.
+   Y se puede combinar con un class normal:
+     <div class="caja" :class="{ oscuro: modoOscuro }">
+
+   :style acepta un objeto con propiedades CSS (en camelCase):
+     <div :style="{ width: porcentaje + '%', backgroundColor: color }">
+
+ TU TAREA
+   TODO 1: El checkbox "Modo oscuro" ya cambia `modoOscuro`. Hacé que el div
+           .panel tenga además la clase "oscuro" solo cuando modoOscuro sea true.
+   TODO 2: El botón "Suscribirme" tiene que estar deshabilitado (:disabled)
+           mientras el email no tenga un "@" (pista: texto.includes('@')).
+   TODO 3: Barra de progreso: hacé que el ancho del div .relleno sea `progreso` %.
+           Los botones −10 / +10 ya cambian el progreso.
+   TODO 4: Cuando el progreso llegue a 100, el div .relleno tiene que tener
+           además la clase "completa" (se pone verde).
+   TODO 5: Con el selector de color, cambiá el color de la frase
+           "Este texto cambia de color" usando :style.
+   TODO 6: Hacé que el link apunte a `urlDocs`, y que se abra en otra pestaña
+           solo si `nuevaPestana` es true.
+           (pista: :target="nuevaPestana ? '_blank' : '_self'")
+
+ CÓMO SABÉS QUE ESTÁ BIEN
+   El panel cambia de color, el botón se habilita al escribir un @,
+   la barra se mueve y se pone verde al 100%, y la frase cambia de color.
+   Inspeccioná los elementos (F12) para ver cómo Vue cambia las clases y estilos.
+
+ DESAFÍO EXTRA
+   Al apretar "Suscribirme", que el formulario desaparezca y aparezca
+   "¡Listo! Te suscribiste con ___" (vas a necesitar un ref nuevo y v-if).
+==========================================================================
+-->
+
+  <div id="app">
+    <h1>06 · Clases y atributos</h1>
+    <p>Datos en atributos con v-bind ( : )</p>
+
+    <!-- TODO 1 -->
+    <div class="caja">
+      <p>
+        <input id="oscuro" type="checkbox" v-model="modoOscuro">
+        <label for="oscuro" class="en-linea">Modo oscuro</label>
+      </p>
+      <div class="panel">
+        Este panel se pone oscuro cuando tildás el checkbox.
+      </div>
+    </div>
+
+    <!-- TODO 2 -->
+    <div class="caja">
+      <label for="email">Email para el newsletter</label>
+      <div class="fila">
+        <input id="email" v-model.trim="email" placeholder="vos@ejemplo.com">
+        <button>Suscribirme</button>
+      </div>
+    </div>
+
+    <!-- TODO 3 y 4 -->
+    <div class="caja">
+      <p>Progreso: {{ progreso }}%</p>
+      <div class="barra">
+        <div class="relleno"></div>
+      </div>
+      <button class="secundario" @click="progreso = Math.max(0, progreso - 10)">−10</button>
+      <button class="secundario" @click="progreso = Math.min(100, progreso + 10)">+10</button>
+    </div>
+
+    <!-- TODO 5 -->
+    <div class="caja">
+      <input type="color" v-model="color">
+      <p class="texto-grande">Este texto cambia de color</p>
+    </div>
+
+    <!-- TODO 6 -->
+    <div class="caja">
+      <p>
+        <input id="pestana" type="checkbox" v-model="nuevaPestana">
+        <label for="pestana" class="en-linea">Abrir en otra pestaña</label>
+      </p>
+      <a href="#">Documentación de Vue</a>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref } = Vue
+
+    createApp({
+      setup() {
+        const modoOscuro = ref(false)
+        const email = ref('')
+        const progreso = ref(30)
+        const color = ref('#42b883')
+        const urlDocs = ref('https://vuejs.org/guide/introduction.html')
+        const nuevaPestana = ref(true)
+
+        return { modoOscuro, email, progreso, color, urlDocs, nuevaPestana }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

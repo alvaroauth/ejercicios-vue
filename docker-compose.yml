@@ -1,0 +1,8 @@
+services:
+  vue:
+    build: .
+    image: vue-ejercicios-node
+    volumes:
+      - ./proyectos:/proyectos
+    ports:
+      - "5173:5173"

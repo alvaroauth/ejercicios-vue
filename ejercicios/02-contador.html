@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>02 · Contador</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+</head>
+<body>
+<!--
+==========================================================================
+ EJERCICIO 02 · Contador (eventos con @click)
+==========================================================================
+
+ QUÉ VAS A APRENDER
+   - Reaccionar a clicks con @click
+   - Escribir funciones en setup() que cambian datos
+   - LA REGLA DEL .value (la causa número 1 de errores al empezar)
+
+ CÓMO FUNCIONA
+   Un ref es una cajita. En el JavaScript accedés al contenido con .value:
+       const contador = ref(0)
+       contador.value++            ✅ en el script: SIEMPRE con .value
+       contador++                  ❌ esto no anda
+
+   En el template, Vue saca el .value por vos:
+       {{ contador }}              ✅ en el HTML: SIN .value
+
+   @click="..." ejecuta algo cuando se hace click. Puede ser:
+       @click="saludar"            llama a la función saludar
+       @click="sumar(5)"           llama a la función con un argumento
+       @click="contador = 0"       una expresión cortita, directo en el HTML
+   (@click es la forma corta de v-on:click. Hay más: @dblclick, @mouseover, @keyup...)
+
+   Las funciones también hay que devolverlas en el return para usarlas en el template.
+
+ TU TAREA
+   TODO 1: Completá incrementar() y conectala al botón "+1".
+   TODO 2: Creá una función decrementar() y conectala al botón "−1".
+   TODO 3: El botón "Reiniciar" tiene que poner el contador en 0.
+           Hacelo SIN función: con una expresión directa en el @click.
+   TODO 4: Creá una función sumar(cantidad) y usala en los botones "+5" y "+10".
+   TODO 5: Debajo del número mostrá "Es par" o "Es impar".
+           (pista: numero % 2 === 0 y el operador ternario   condicion ? 'a' : 'b')
+
+ CÓMO SABÉS QUE ESTÁ BIEN
+   Todos los botones cambian el número grande, y el par/impar se actualiza solo.
+
+ DESAFÍO EXTRA
+   - Que el contador nunca baje de 0.
+   - Un segundo ref `clicks` que cuente cuántas veces se apretó cualquier botón.
+==========================================================================
+-->
+
+  <div id="app">
+    <h1>02 · Contador</h1>
+    <p>Eventos con @click y la regla del .value</p>
+
+    <div class="caja">
+      <!-- Ejemplo que ya funciona: -->
+      <button class="secundario" @click="saludar">Saludar</button>
+      <span>{{ saludo }}</span>
+    </div>
+
+    <div class="caja centrado">
+      <p class="numero-grande">{{ contador }}</p>
+      <!-- TODO 5: "Es par" / "Es impar" -->
+
+      <button>−1</button>                          <!-- TODO 2 -->
+      <button>+1</button>                          <!-- TODO 1 -->
+      <button>+5</button>                          <!-- TODO 4 -->
+      <button>+10</button>                         <!-- TODO 4 -->
+      <button class="secundario">Reiniciar</button> <!-- TODO 3 -->
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref } = Vue
+
+    createApp({
+      setup() {
+        // Ejemplo
+        const saludo = ref('')
+        function saludar() {
+          saludo.value = '¡Hola! 👋'   // en el script: con .value
+        }
+
+        const contador = ref(0)
+
+        function incrementar() {
+          // TODO 1
+        }
+
+        // TODO 2: function decrementar() { ... }
+
+        // TODO 4: function sumar(cantidad) { ... }
+
+        return { saludo, saludar, contador, incrementar }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>06 · Clases y atributos (solución)</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+  <style>
+    .panel { padding: 16px; border-radius: 8px; background: #eef1f4; transition: all 0.3s; }
+    .panel.oscuro { background: #1e2a36; color: #e8edf2; }
+
+    .barra { height: 18px; background: #e5e7eb; border-radius: 9px; overflow: hidden; margin-bottom: 10px; }
+    .relleno { height: 100%; width: 0; background: #3b82f6; transition: width 0.3s, background 0.3s; }
+    .relleno.completa { background: var(--verde); }
+
+    .texto-grande { font-size: 1.6rem; font-weight: 700; margin: 8px 0 0; }
+  </style>
+</head>
+<body>
+  <!-- SOLUCIÓN del ejercicio 06 (incluye el desafío extra) -->
+
+  <div id="app">
+    <h1>06 · Clases y atributos</h1>
+    <p>Datos en atributos con v-bind ( : )</p>
+
+    <div class="caja">
+      <p>
+        <input id="oscuro" type="checkbox" v-model="modoOscuro">
+        <label for="oscuro" class="en-linea">Modo oscuro</label>
+      </p>
+      <div class="panel" :class="{ oscuro: modoOscuro }">
+        Este panel se pone oscuro cuando tildás el checkbox.
+      </div>
+    </div>
+
+    <div class="caja">
+      <p v-if="suscripto">¡Listo! Te suscribiste con <strong>{{ email }}</strong> 📬</p>
+      <template v-else>
+        <label for="email">Email para el newsletter</label>
+        <div class="fila">
+          <input id="email" v-model.trim="email" placeholder="vos@ejemplo.com">
+          <button :disabled="!email.includes('@')" @click="suscripto = true">Suscribirme</button>
+        </div>
+      </template>
+    </div>
+
+    <div class="caja">
+      <p>Progreso: {{ progreso }}%</p>
+      <div class="barra">
+        <div
+          class="relleno"
+          :class="{ completa: progreso === 100 }"
+          :style="{ width: progreso + '%' }"
+        ></div>
+      </div>
+      <button class="secundario" @click="progreso = Math.max(0, progreso - 10)">−10</button>
+      <button class="secundario" @click="progreso = Math.min(100, progreso + 10)">+10</button>
+    </div>
+
+    <div class="caja">
+      <input type="color" v-model="color">
+      <p class="texto-grande" :style="{ color: color }">Este texto cambia de color</p>
+    </div>
+
+    <div class="caja">
+      <p>
+        <input id="pestana" type="checkbox" v-model="nuevaPestana">
+        <label for="pestana" class="en-linea">Abrir en otra pestaña</label>
+      </p>
+      <a :href="urlDocs" :target="nuevaPestana ? '_blank' : '_self'">Documentación de Vue</a>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref } = Vue
+
+    createApp({
+      setup() {
+        const modoOscuro = ref(false)
+        const email = ref('')
+        const suscripto = ref(false) // extra
+        const progreso = ref(30)
+        const color = ref('#42b883')
+        const urlDocs = ref('https://vuejs.org/guide/introduction.html')
+        const nuevaPestana = ref(true)
+
+        return { modoOscuro, email, suscripto, progreso, color, urlDocs, nuevaPestana }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

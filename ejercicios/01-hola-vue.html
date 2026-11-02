@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>01 · Hola Vue</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+</head>
+<body>
+<!--
+==========================================================================
+ EJERCICIO 01 · Hola Vue
+==========================================================================
+
+ QUÉ VAS A APRENDER
+   - Cómo "enchufar" Vue a una página: createApp(...).mount('#app')
+   - Cómo guardar datos con ref()
+   - Cómo mostrarlos en el HTML con {{ llaves dobles }}
+
+ CÓMO FUNCIONA
+   1. createApp({...}).mount('#app') le dice a Vue: "hacete cargo del
+      div con id app". Todo lo que está adentro de ese div es el TEMPLATE.
+   2. Adentro de setup() creás los datos. ref('hola') crea un dato
+      REACTIVO: cuando cambia, Vue actualiza la página solo.
+   3. Todo lo que devolvés en el `return` de setup() se puede usar en el template.
+   4. En el template escribís {{ nombreDelDato }} y Vue pone su valor.
+      Adentro de las llaves va cualquier EXPRESIÓN de JavaScript:
+        {{ precio * 2 }}
+        {{ nombre.toUpperCase() }}
+        {{ edad >= 18 ? 'mayor' : 'menor' }}
+
+   Mirá el ejemplo que ya funciona: el dato `mensaje`.
+
+ TU TAREA
+   TODO 1: Creá un ref `nombre` con tu nombre. Devolvelo en el return y
+           mostralo en el template: "Me llamo ___".
+   TODO 2: Creá un ref `edad` con un número. Mostrá:
+           "El año que viene voy a tener ___ años" (hacé la cuenta adentro de las llaves).
+   TODO 3: Mostrá tu nombre en MAYÚSCULAS (pista: los strings tienen .toUpperCase()).
+   TODO 4: Creá un ref `lenguajes` con un array, por ejemplo ['HTML', 'CSS', 'JavaScript'].
+           Mostrá: "Sé 3 lenguajes y el primero que aprendí fue HTML"
+           (el 3 y el HTML tienen que salir del array, no escritos a mano).
+
+ CÓMO SABÉS QUE ESTÁ BIEN
+   Recargás la página (F5) y ves las frases con tus datos.
+   Si no aparece nada, o ves las {{ }} tal cual, abrí la consola (F12) y leé el error.
+   Error típico: crear el ref y olvidarte de ponerlo en el return.
+
+ DESAFÍO EXTRA (hacelo, es la magia de Vue)
+   Abrí la consola (F12, pestaña Consola) y escribí:
+       vm.mensaje = 'Lo cambié desde la consola'
+   Mirá cómo la página se actualiza sola. Probá lo mismo con vm.edad = 99
+==========================================================================
+-->
+
+  <div id="app">
+    <h1>01 · Hola Vue</h1>
+    <p>Mostrar datos con ref() y llaves dobles</p>
+
+    <div class="caja">
+      <!-- Ejemplo que ya funciona: -->
+      <p>{{ mensaje }}</p>
+      <p>El mensaje tiene {{ mensaje.length }} caracteres.</p>
+    </div>
+
+    <div class="caja">
+      <!-- TODO 1: "Me llamo ___" -->
+
+      <!-- TODO 2: "El año que viene voy a tener ___ años" -->
+
+      <!-- TODO 3: tu nombre en mayúsculas -->
+
+      <!-- TODO 4: "Sé ___ lenguajes y el primero que aprendí fue ___" -->
+
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref } = Vue
+
+    // Guardamos la app en `vm` para poder tocarla desde la consola (ver DESAFÍO EXTRA).
+    const vm = createApp({
+      setup() {
+        // Ejemplo: un dato reactivo
+        const mensaje = ref('¡Hola desde Vue! 💚')
+
+        // TODO 1: const nombre = ref(...)
+
+        // TODO 2:
+
+        // TODO 4:
+
+        return {
+          mensaje,
+          // ← acá agregá todo lo que crees
+        }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

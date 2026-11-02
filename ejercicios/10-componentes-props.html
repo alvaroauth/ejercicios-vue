@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>10 · Componentes y props</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+  <style>
+    .tarjeta {
+      background: white;
+      border: 1px solid var(--borde);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .tarjeta .avatar { font-size: 2.5rem; }
+    .tarjeta p { font-size: 0.9em; margin: 4px 0 0; }
+    .tarjeta.ausente { opacity: 0.5; filter: grayscale(1); }
+  </style>
+</head>
+<body>
+<!--
+==========================================================================
+ EJERCICIO 10 · Componentes y props
+==========================================================================
+
+ QUÉ VAS A APRENDER
+   - Crear componentes: pedazos de interfaz reutilizables, como tus propias etiquetas
+   - Pasarles datos con props
+
+ CÓMO FUNCIONA
+   Un componente tiene su propio template, sus props y su propio setup():
+
+     app.component('saludo-persona', {
+       props: { nombre: String },
+       template: `<p>Hola, {{ nombre }}!</p>`
+     })
+
+   Y lo usás como si fuera una etiqueta HTML:
+     <saludo-persona nombre="Ana"></saludo-persona>              texto fijo
+     <saludo-persona :nombre="usuarioActual"></saludo-persona>   con : pasás una variable
+
+   Las PROPS son los datos que el padre le pasa al hijo. Para el hijo son de
+   SOLO LECTURA: no las cambia. (Si necesita cambiar algo, le avisa al padre:
+   eso es el ejercicio 11.)
+
+   Si querés pasar un número o un booleano fijo, también va con dos puntos:
+     :edad="30"   :disponible="false"
+   (sin los dos puntos llega el TEXTO "30" o el TEXTO "false")
+
+   Valores por defecto:
+     props: {
+       rol: { type: String, default: 'Sin rol' }
+     }
+
+   Un componente puede tener su propio estado con setup(), igual que la app.
+   Cada vez que lo usás se crea una COPIA independiente de ese estado.
+
+   ⚠️ Detalles por escribir el template directo en el HTML
+      (en proyectos con Vite y archivos .vue esto no pasa):
+      - Nombres de componentes en kebab-case: <tarjeta-usuario>, no <TarjetaUsuario>
+      - Siempre con etiqueta de cierre: <tarjeta-usuario></tarjeta-usuario>
+      - En el HTML, las props van en kebab-case: :foto-url="..." (en el JS se llama fotoUrl)
+
+   Ahora guardamos la app en una variable para registrar componentes ANTES de montar:
+     const app = createApp({...})
+     app.component('nombre', {...})
+     app.mount('#app')                (montar al final)
+
+ TU TAREA
+   TODO 1: Completá el componente 'tarjeta-usuario' para que reciba las props
+           nombre, rol y emoji (las tres String) y las muestre.
+   TODO 2: Usá <tarjeta-usuario> tres veces a mano, con datos fijos (sin :).
+   TODO 3: Ahora usalo con v-for sobre el array `equipo` (acá sí con : en cada prop).
+   TODO 4: Agregá la prop `disponible` (Boolean, por defecto true). Si es false,
+           que la tarjeta tenga la clase "ausente" (se ve gris) y diga "No disponible".
+   TODO 5: Agregá la prop `bio` y un botón "Ver más" / "Ver menos" que muestre
+           u oculte la bio. Ojo: si la tarjeta está abierta o cerrada es estado
+           PROPIO de cada tarjeta: creá un ref `abierta` en el setup() del componente.
+           Fijate que cada tarjeta se abre por separado.
+
+ CÓMO SABÉS QUE ESTÁ BIEN
+   Ves 3 tarjetas fijas y 4 del equipo; la de Martín está en gris; cada
+   "Ver más" abre solo su tarjeta.
+
+ DESAFÍO EXTRA
+   Creá un ref `soloDisponibles` en la app con un checkbox, y un computed que
+   filtre el equipo. Fijate que el componente no cambia nada: solo cambian
+   los datos que le pasa el padre.
+==========================================================================
+-->
+
+  <div id="app">
+    <h1>10 · Componentes y props</h1>
+    <p>Crear tus propias etiquetas</p>
+
+    <h2>Ejemplo</h2>
+    <saludo-persona nombre="Ana"></saludo-persona>
+    <saludo-persona :nombre="invitado"></saludo-persona>
+
+    <h2>A mano</h2>
+    <div class="grilla">
+      <!-- TODO 2: tres <tarjeta-usuario> con props fijas -->
+    </div>
+
+    <h2>Con v-for</h2>
+    <div class="grilla">
+      <!-- TODO 3 -->
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref } = Vue
+
+    const app = createApp({
+      setup() {
+        const invitado = ref('Beto')
+        const equipo = ref([
+          { id: 1, nombre: 'Lucía', rol: 'Frontend', emoji: '🎨', disponible: true, bio: 'Hace interfaces lindas y accesibles.' },
+          { id: 2, nombre: 'Martín', rol: 'Backend', emoji: '🛠️', disponible: false, bio: 'Bases de datos, APIs y mucho café.' },
+          { id: 3, nombre: 'Sofía', rol: 'Diseño', emoji: '✏️', disponible: true, bio: 'Piensa primero en quien usa la app.' },
+          { id: 4, nombre: 'Juan', rol: 'Testing', emoji: '🔍', disponible: true, bio: 'Si hay un bug, lo encuentra.' },
+        ])
+        return { invitado, equipo }
+      }
+    })
+
+    // Ejemplo de componente
+    app.component('saludo-persona', {
+      props: {
+        nombre: String,
+      },
+      template: `<p class="caja">👋 Hola, <strong>{{ nombre }}</strong>!</p>`
+    })
+
+    // TODO 1, 4 y 5
+    app.component('tarjeta-usuario', {
+      props: {
+        // TODO 1
+      },
+      setup(props) {
+        // TODO 5
+        return {}
+      },
+      template: `
+        <div class="tarjeta">
+          <!-- TODO 1: mostrá el emoji (con class="avatar"), el nombre y el rol -->
+        </div>
+      `
+    })
+
+    app.mount('#app')
+  </script>
+</body>
+</html>

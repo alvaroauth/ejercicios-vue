@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>03 · Formulario (solución)</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+  <style>
+    .bio { white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <!-- SOLUCIÓN del ejercicio 03 (incluye el desafío extra) -->
+
+  <div id="app">
+    <h1>03 · Formulario de perfil</h1>
+    <p>Conectar inputs con datos usando v-model</p>
+
+    <div class="dos-columnas">
+      <div class="caja formulario">
+        <label for="nombre">Nombre</label>
+        <input id="nombre" v-model="nombre" placeholder="Tu nombre">
+
+        <label for="edad">Edad</label>
+        <input id="edad" type="number" v-model.number="edad">
+
+        <label for="ciudad">Ciudad</label>
+        <select id="ciudad" v-model="ciudad">
+          <option disabled value="">Elegí una</option>
+          <option>Buenos Aires</option>
+          <option>Córdoba</option>
+          <option>Rosario</option>
+          <option>Mendoza</option>
+          <option>Otra</option>
+        </select>
+
+        <label for="bio">Sobre vos</label>
+        <textarea id="bio" rows="3" maxlength="140" v-model="bio"></textarea>
+        <span class="pista">{{ bio.length }} / 140</span>
+
+        <p>
+          <input id="publico" type="checkbox" v-model="publico">
+          <label for="publico" class="en-linea">Perfil público</label>
+        </p>
+
+        <!-- Extra: varios checkboxes con el mismo array -->
+        <label>Intereses</label>
+        <label class="en-linea"><input type="checkbox" value="Música" v-model="intereses"> Música</label>
+        <label class="en-linea"><input type="checkbox" value="Deportes" v-model="intereses"> Deportes</label>
+        <label class="en-linea"><input type="checkbox" value="Programación" v-model="intereses"> Programación</label>
+
+        <p><button class="secundario" @click="limpiar">Limpiar</button></p>
+      </div>
+
+      <div class="caja">
+        <h2>Vista previa</h2>
+        <p><strong>{{ nombre || 'Sin nombre' }}</strong></p>
+        <p>{{ edad ? edad + ' años' : 'Edad sin completar' }}</p>
+        <p>📍 {{ ciudad || 'Sin ciudad' }}</p>
+        <p class="bio">{{ bio || 'Sin descripción' }}</p>
+        <p>{{ publico ? '🌍 Perfil público' : '🔒 Perfil privado' }}</p>
+        <p>Intereses: {{ intereses.join(', ') || 'ninguno' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref } = Vue
+
+    createApp({
+      setup() {
+        const nombre = ref('')
+        const edad = ref(null)
+        const ciudad = ref('')
+        const bio = ref('')
+        const publico = ref(true)
+        const intereses = ref([])
+
+        function limpiar() {
+          // Cambiamos los refs y v-model actualiza los inputs solo
+          nombre.value = ''
+          edad.value = null
+          ciudad.value = ''
+          bio.value = ''
+          publico.value = true
+          intereses.value = []
+        }
+
+        return { nombre, edad, ciudad, bio, publico, intereses, limpiar }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

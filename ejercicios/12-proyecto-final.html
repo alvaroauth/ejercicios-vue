@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>12 · Proyecto final</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+  <style>
+    /* Clases listas para usar: */
+    .filtros { display: flex; gap: 6px; margin: 12px 0; }
+    .filtros button.activo { background: var(--azul-vue); color: white; border-color: var(--azul-vue); }
+    .tarea { gap: 10px; }
+    .tarea .texto { flex: 1; cursor: text; }
+    .tarea input.editar { flex: 1; }
+    .pie { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; color: var(--suave); }
+    /* .tachado, .lista, .fila, .pista ya están en estilos.css */
+  </style>
+</head>
+<body>
+<!--
+==========================================================================
+ PROYECTO FINAL · App de tareas
+==========================================================================
+
+ Juntá todo lo que aprendiste. Acá no hay código de ayuda: solo requisitos.
+ Andá de a uno y probá cada paso en el navegador antes de seguir.
+
+ Forma de cada tarea:   { id: 1, texto: 'Aprender Vue', hecha: false }
+
+ REQUISITOS                                                      (te va a servir)
+   [ ] 1. Un input + botón para agregar tareas, que también        v-model, @keyup.enter
+          funcione con Enter. No se pueden agregar tareas vacías.
+   [ ] 2. La lista de tareas, cada una con un checkbox para        v-for, :key, v-model
+          marcarla como hecha.
+   [ ] 3. Las tareas hechas se ven tachadas (clase "tachado").     :class
+   [ ] 4. Un botón ✕ en cada tarea para borrarla.                  @click, filter
+   [ ] 5. "Quedan X tareas pendientes", o "¡Todo listo! 🎉"         computed, v-if
+          si no queda ninguna.
+   [ ] 6. Filtros: Todas / Pendientes / Hechas. El filtro          computed, :class
+          activo se ve resaltado (clase "activo").
+   [ ] 7. Un botón "Borrar hechas" que solo aparece si hay         v-if
+          alguna tarea hecha.
+   [ ] 8. Las tareas se guardan en localStorage y siguen ahí       watch con deep
+          después de recargar.
+   [ ] 9. Cada tarea es un componente 'item-tarea' que recibe      props, emit
+          la tarea por prop y emite 'alternar' y 'borrar'.
+          Ojo: adentro del componente NO podés usar v-model sobre la prop
+          (las props son de solo lectura). Usá :checked="tarea.hecha" y
+          @change="$emit('alternar')".
+   [ ] 10. DESAFÍO: doble click sobre el texto de una tarea        @dblclick, estado propio
+           permite editarlo. Enter guarda, Escape cancela.         del componente
+
+ SUGERENCIA DE ORDEN
+   Hacé del 1 al 8 todo en la app principal. Cuando funcione, recién ahí
+   pasá cada tarea a un componente (9). Separar en componentes algo que ya
+   anda es mucho más fácil que arrancar con componentes.
+
+ SI TE TRABÁS
+   Volvé al ejercicio del tema: 05 (listas), 06 (clases), 07 (computed),
+   08 (localStorage), 10 (props), 11 (emit). La solución completa está en
+   soluciones/12-proyecto-final.html, pero intentá no mirarla. 💪
+==========================================================================
+-->
+
+  <div id="app">
+    <h1>Mis tareas</h1>
+    <p>Proyecto final</p>
+
+    <div class="caja">
+      <!-- Tu app acá -->
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref, computed, watch } = Vue
+
+    const app = createApp({
+      setup() {
+        // Tu código acá
+
+        return {}
+      }
+    })
+
+    // Requisito 9: app.component('item-tarea', { ... })
+
+    app.mount('#app')
+  </script>
+</body>
+</html>

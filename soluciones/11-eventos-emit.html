@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>11 · Eventos con emit (solución)</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+  <style>
+    .opcion {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      border: 1px solid var(--borde);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin: 8px 0;
+    }
+    .opcion .sabor { flex: 1; font-weight: 600; }
+    .opcion .votos { color: var(--suave); }
+    .opcion .barra { height: 4px; background: var(--verde); border-radius: 2px; transition: width 0.3s; }
+  </style>
+</head>
+<body>
+  <!-- SOLUCIÓN del ejercicio 11 (incluye el desafío extra) -->
+
+  <div id="app">
+    <h1>11 · Votación de helados 🍦</h1>
+    <p>Los hijos le avisan al padre con emit()</p>
+
+    <!-- El evento trae el nombre, y agregarSabor lo recibe como argumento -->
+    <nuevo-sabor @agregar="agregarSabor"></nuevo-sabor>
+
+    <opcion-voto
+      v-for="sabor in sabores"
+      :key="sabor.id"
+      :nombre="sabor.nombre"
+      :votos="sabor.votos"
+      :porcentaje="porcentajeDe(sabor)"
+      @votar="sumarVoto(sabor.id)"
+      @quitar="quitar(sabor.id)"
+    ></opcion-voto>
+
+    <p class="caja" v-if="ganador">🏆 Va ganando: <strong>{{ ganador.nombre }}</strong> ({{ ganador.votos }})</p>
+    <p class="caja" v-else>Todavía no hay votos</p>
+  </div>
+
+  <script>
+    const { createApp, ref, computed } = Vue
+
+    const app = createApp({
+      setup() {
+        const sabores = ref([
+          { id: 1, nombre: 'Dulce de leche', votos: 0 },
+          { id: 2, nombre: 'Chocolate', votos: 0 },
+          { id: 3, nombre: 'Limón', votos: 0 },
+          { id: 4, nombre: 'Frutilla', votos: 0 },
+        ])
+
+        function sumarVoto(id) {
+          const sabor = sabores.value.find(s => s.id === id)
+          sabor.votos++
+        }
+
+        function quitar(id) {
+          sabores.value = sabores.value.filter(s => s.id !== id)
+        }
+
+        function agregarSabor(nombre) {
+          sabores.value.push({ id: Date.now(), nombre, votos: 0 })
+        }
+
+        const ganador = computed(() => {
+          if (sabores.value.length === 0) return null
+          const masVotado = sabores.value.reduce((a, b) => (b.votos > a.votos ? b : a))
+          return masVotado.votos > 0 ? masVotado : null
+        })
+
+        // Extra
+        const totalVotos = computed(() => sabores.value.reduce((t, s) => t + s.votos, 0))
+        function porcentajeDe(sabor) {
+          return totalVotos.value === 0 ? 0 : Math.round((sabor.votos / totalVotos.value) * 100)
+        }
+
+        return { sabores, sumarVoto, quitar, agregarSabor, ganador, porcentajeDe }
+      }
+    })
+
+    app.component('opcion-voto', {
+      props: {
+        nombre: String,
+        votos: Number,
+        porcentaje: { type: Number, default: 0 },
+      },
+      emits: ['votar', 'quitar'],
+      template: `
+        <div class="opcion">
+          <div class="sabor">
+            {{ nombre }}
+            <div class="barra" :style="{ width: porcentaje + '%' }"></div>
+          </div>
+          <span class="votos">{{ votos }} {{ votos === 1 ? 'voto' : 'votos' }}</span>
+          <button @click="$emit('votar')">Votar</button>
+          <button class="secundario" @click="$emit('quitar')">Quitar</button>
+        </div>
+      `
+    })
+
+    app.component('nuevo-sabor', {
+      emits: ['agregar'],
+      setup(props, { emit }) {
+        const texto = ref('')
+
+        function enviar() {
+          const nombre = texto.value.trim()
+          if (!nombre) return
+          emit('agregar', nombre)
+          texto.value = ''
+        }
+
+        return { texto, enviar }
+      },
+      template: `
+        <div class="caja fila">
+          <input v-model="texto" @keyup.enter="enviar" placeholder="Nuevo sabor">
+          <button @click="enviar">Agregar</button>
+        </div>
+      `
+    })
+
+    app.mount('#app')
+  </script>
+</body>
+</html>

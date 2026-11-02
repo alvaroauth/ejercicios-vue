@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>01 · Hola Vue (solución)</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+</head>
+<body>
+  <!-- SOLUCIÓN del ejercicio 01. Primero intentalo vos 😉 -->
+
+  <div id="app">
+    <h1>01 · Hola Vue</h1>
+    <p>Mostrar datos con ref() y llaves dobles</p>
+
+    <div class="caja">
+      <p>{{ mensaje }}</p>
+      <p>El mensaje tiene {{ mensaje.length }} caracteres.</p>
+    </div>
+
+    <div class="caja">
+      <p>Me llamo {{ nombre }}</p>
+      <p>El año que viene voy a tener {{ edad + 1 }} años</p>
+      <p>En mayúsculas: {{ nombre.toUpperCase() }}</p>
+      <p>Sé {{ lenguajes.length }} lenguajes y el primero que aprendí fue {{ lenguajes[0] }}</p>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref } = Vue
+
+    const vm = createApp({
+      setup() {
+        const mensaje = ref('¡Hola desde Vue! 💚')
+        const nombre = ref('Ada')
+        const edad = ref(25)
+        const lenguajes = ref(['HTML', 'CSS', 'JavaScript'])
+
+        // Si algo no está en el return, el template no lo ve
+        return { mensaje, nombre, edad, lenguajes }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

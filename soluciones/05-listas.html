@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>05 · Listas (solución)</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+</head>
+<body>
+  <!-- SOLUCIÓN del ejercicio 05 (incluye los desafíos extra) -->
+
+  <div id="app">
+    <h1>05 · Lista del súper</h1>
+    <p>Repetir elementos con v-for</p>
+
+    <div class="caja">
+      <p>Días que hago las compras:
+        <span v-for="dia in dias" :key="dia" class="etiqueta">{{ dia }}</span>
+      </p>
+    </div>
+
+    <div class="caja">
+      <div class="fila">
+        <input v-model="nuevoProducto" @keyup.enter="agregar" placeholder="¿Qué falta?">
+        <button @click="agregar">Agregar</button>
+      </div>
+
+      <!-- El v-if va en el <ul> y el v-for en el <li>: nunca los dos en el mismo -->
+      <ul v-if="productos.length > 0" class="lista">
+        <li v-for="p in productos" :key="p.id">
+          <span>{{ p.nombre }} × {{ p.cantidad }}</span>
+          <span>
+            <button class="secundario" @click="cambiarCantidad(p, -1)">−</button>
+            <button class="secundario" @click="cambiarCantidad(p, 1)">+</button>
+            <button class="peligro" @click="borrar(p.id)">✕</button>
+          </span>
+        </li>
+      </ul>
+      <p v-else class="pista">No hay nada en la lista 🛒</p>
+
+      <p>Total de unidades: {{ productos.reduce((total, p) => total + p.cantidad, 0) }}</p>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref } = Vue
+
+    createApp({
+      setup() {
+        const dias = ref(['Lunes', 'Jueves', 'Sábado'])
+
+        const productos = ref([
+          { id: 1, nombre: 'Yerba', cantidad: 2 },
+          { id: 2, nombre: 'Dulce de leche', cantidad: 1 },
+          { id: 3, nombre: 'Pan', cantidad: 6 },
+        ])
+        const nuevoProducto = ref('')
+
+        function agregar() {
+          const nombre = nuevoProducto.value.trim()
+          if (nombre === '') return // no agregamos vacíos
+
+          productos.value.push({ id: Date.now(), nombre, cantidad: 1 })
+          nuevoProducto.value = ''
+        }
+
+        function borrar(id) {
+          productos.value = productos.value.filter(p => p.id !== id)
+        }
+
+        // Extra: p es el objeto de la lista, así que modificarlo cambia la lista
+        function cambiarCantidad(p, cuanto) {
+          p.cantidad += cuanto
+          if (p.cantidad <= 0) borrar(p.id)
+        }
+
+        return { dias, productos, nuevoProducto, agregar, borrar, cambiarCantidad }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

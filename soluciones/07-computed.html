@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>07 · Computed (solución)</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+  <style>
+    .tabla { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    .tabla th, .tabla td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--borde); }
+    .tabla input { width: 70px; }
+    .tabla tr.sin-unidades { color: var(--suave); }
+    .resumen p { display: flex; justify-content: space-between; margin: 4px 0; }
+    .resumen .total { font-size: 1.3rem; font-weight: 700; border-top: 1px solid var(--borde); padding-top: 8px; }
+  </style>
+</head>
+<body>
+  <!-- SOLUCIÓN del ejercicio 07 (incluye el desafío extra) -->
+
+  <div id="app">
+    <h1>07 · Carrito</h1>
+    <p>Valores calculados con computed()</p>
+
+    <div class="caja">
+      <input v-model="busqueda" placeholder="🔍 Buscar producto..." class="ancho">
+      <p class="pista">Ejemplo de computed: hay {{ cantidadProductos }} productos en el catálogo.</p>
+
+      <table class="tabla" v-if="productosFiltrados.length > 0">
+        <thead>
+          <tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th></tr>
+        </thead>
+        <tbody>
+          <tr v-for="p in productosFiltrados" :key="p.id" :class="{ 'sin-unidades': !p.cantidad }">
+            <td>{{ p.nombre }}</td>
+            <td>{{ pesos(p.precio) }}</td>
+            <td><input type="number" min="0" v-model.number="p.cantidad"></td>
+            <td>{{ pesos(p.precio * cantidadDe(p)) }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p v-else class="pista">Sin resultados para «{{ busqueda }}»</p>
+    </div>
+
+    <div class="caja resumen">
+      <p><span>Unidades</span> <span>{{ cantidadTotal }}</span></p>
+      <p><span>Subtotal</span> <span>{{ pesos(subtotal) }}</span></p>
+      <p><span>Descuento (10% arriba de $50.000)</span> <span>− {{ pesos(descuento) }}</span></p>
+      <p class="total"><span>Total</span> <span>{{ pesos(total) }}</span></p>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref, computed } = Vue
+
+    createApp({
+      setup() {
+        const productos = ref([
+          { id: 1, nombre: 'Alfajor', precio: 900, cantidad: 3 },
+          { id: 2, nombre: 'Mate de calabaza', precio: 15000, cantidad: 1 },
+          { id: 3, nombre: 'Termo', precio: 32000, cantidad: 0 },
+          { id: 4, nombre: 'Bombilla', precio: 4500, cantidad: 1 },
+          { id: 5, nombre: 'Yerba 1 kg', precio: 5200, cantidad: 2 },
+        ])
+        const busqueda = ref('')
+
+        function pesos(numero) {
+          return '$ ' + numero.toLocaleString('es-AR')
+        }
+
+        // Extra: si el input queda vacío, cantidad vale '' y 3 + '' da "3" (¡un string!).
+        // Así nos aseguramos de sumar siempre números, y nunca negativos.
+        function cantidadDe(p) {
+          return Math.max(0, Number(p.cantidad) || 0)
+        }
+
+        const cantidadProductos = computed(() => productos.value.length)
+
+        const cantidadTotal = computed(() =>
+          productos.value.reduce((acumulado, p) => acumulado + cantidadDe(p), 0)
+        )
+
+        const subtotal = computed(() =>
+          productos.value.reduce((acumulado, p) => acumulado + p.precio * cantidadDe(p), 0)
+        )
+
+        // Un computed puede usar otros computed
+        const descuento = computed(() => (subtotal.value > 50000 ? subtotal.value * 0.1 : 0))
+
+        const total = computed(() => subtotal.value - descuento.value)
+
+        const productosFiltrados = computed(() => {
+          const texto = busqueda.value.toLowerCase()
+          return productos.value.filter(p => p.nombre.toLowerCase().includes(texto))
+        })
+
+        return {
+          productos, busqueda, pesos, cantidadDe,
+          cantidadProductos, cantidadTotal, subtotal, descuento, total, productosFiltrados,
+        }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# Dependencias y builds de los proyectos que crees con ./vue.sh
+node_modules/
+dist/
+
+# Configuración local de Claude
+.claude/

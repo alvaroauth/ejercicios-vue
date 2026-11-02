@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>10 · Componentes y props (solución)</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+  <style>
+    .tarjeta {
+      background: white;
+      border: 1px solid var(--borde);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .tarjeta .avatar { font-size: 2.5rem; }
+    .tarjeta p { font-size: 0.9em; margin: 4px 0 0; }
+    .tarjeta.ausente { opacity: 0.5; filter: grayscale(1); }
+  </style>
+</head>
+<body>
+  <!-- SOLUCIÓN del ejercicio 10 (incluye el desafío extra) -->
+
+  <div id="app">
+    <h1>10 · Componentes y props</h1>
+    <p>Crear tus propias etiquetas</p>
+
+    <h2>Ejemplo</h2>
+    <saludo-persona nombre="Ana"></saludo-persona>
+    <saludo-persona :nombre="invitado"></saludo-persona>
+
+    <h2>A mano</h2>
+    <div class="grilla">
+      <tarjeta-usuario nombre="Ada" rol="Programadora" emoji="👩‍💻"></tarjeta-usuario>
+      <tarjeta-usuario nombre="Alan" rol="Matemático" emoji="🧮" bio="Se preguntó si las máquinas pueden pensar."></tarjeta-usuario>
+      <!-- Sin la prop rol: usa el valor por defecto -->
+      <tarjeta-usuario nombre="Grace" emoji="⚓"></tarjeta-usuario>
+    </div>
+
+    <h2>Con v-for</h2>
+    <p>
+      <input id="solo" type="checkbox" v-model="soloDisponibles">
+      <label for="solo" class="en-linea">Solo disponibles</label>
+    </p>
+    <div class="grilla">
+      <tarjeta-usuario
+        v-for="persona in equipoVisible"
+        :key="persona.id"
+        :nombre="persona.nombre"
+        :rol="persona.rol"
+        :emoji="persona.emoji"
+        :disponible="persona.disponible"
+        :bio="persona.bio"
+      ></tarjeta-usuario>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref, computed } = Vue
+
+    const app = createApp({
+      setup() {
+        const invitado = ref('Beto')
+        const equipo = ref([
+          { id: 1, nombre: 'Lucía', rol: 'Frontend', emoji: '🎨', disponible: true, bio: 'Hace interfaces lindas y accesibles.' },
+          { id: 2, nombre: 'Martín', rol: 'Backend', emoji: '🛠️', disponible: false, bio: 'Bases de datos, APIs y mucho café.' },
+          { id: 3, nombre: 'Sofía', rol: 'Diseño', emoji: '✏️', disponible: true, bio: 'Piensa primero en quien usa la app.' },
+          { id: 4, nombre: 'Juan', rol: 'Testing', emoji: '🔍', disponible: true, bio: 'Si hay un bug, lo encuentra.' },
+        ])
+
+        // Extra
+        const soloDisponibles = ref(false)
+        const equipoVisible = computed(() =>
+          soloDisponibles.value ? equipo.value.filter(p => p.disponible) : equipo.value
+        )
+
+        return { invitado, equipo, soloDisponibles, equipoVisible }
+      }
+    })
+
+    app.component('saludo-persona', {
+      props: {
+        nombre: String,
+      },
+      template: `<p class="caja">👋 Hola, <strong>{{ nombre }}</strong>!</p>`
+    })
+
+    app.component('tarjeta-usuario', {
+      props: {
+        nombre: String,
+        rol: { type: String, default: 'Sin rol' },
+        emoji: { type: String, default: '🙂' },
+        disponible: { type: Boolean, default: true },
+        bio: String,
+      },
+      setup() {
+        // Estado propio: cada tarjeta tiene su propio `abierta`
+        const abierta = ref(false)
+        return { abierta }
+      },
+      template: `
+        <div class="tarjeta" :class="{ ausente: !disponible }">
+          <span class="avatar">{{ emoji }}</span>
+          <strong>{{ nombre }}</strong>
+          <span class="pista">{{ rol }}</span>
+          <span v-if="!disponible" class="pista">No disponible</span>
+          <template v-if="bio">
+            <button class="secundario" @click="abierta = !abierta">
+              {{ abierta ? 'Ver menos' : 'Ver más' }}
+            </button>
+            <p v-if="abierta">{{ bio }}</p>
+          </template>
+        </div>
+      `
+    })
+
+    app.mount('#app')
+  </script>
+</body>
+</html>

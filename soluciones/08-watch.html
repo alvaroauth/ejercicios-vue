@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>08 · Watch (solución)</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+</head>
+<body>
+  <!-- SOLUCIÓN del ejercicio 08 (incluye el desafío extra) -->
+
+  <div id="app">
+    <h1>08 · Bloc de notas</h1>
+    <p>Reaccionar a cambios con watch() y guardar en localStorage</p>
+
+    <div class="caja">
+      <label for="texto">Notas rápidas</label>
+      <textarea id="texto" v-model="texto" rows="6" class="ancho" placeholder="Escribí algo y recargá la página..."></textarea>
+      <span class="pista" v-show="guardado">Guardado ✓</span>
+    </div>
+
+    <div class="caja">
+      <h2>Pendientes</h2>
+      <div class="fila">
+        <input v-model="nuevoPendiente" @keyup.enter="agregarPendiente" placeholder="Nuevo pendiente">
+        <button @click="agregarPendiente">Agregar</button>
+      </div>
+      <ul class="lista">
+        <li v-for="p in pendientes" :key="p.id">
+          <label class="en-linea">
+            <input type="checkbox" v-model="p.hecho">
+            <span :class="{ tachado: p.hecho }">{{ p.texto }}</span>
+          </label>
+        </li>
+      </ul>
+    </div>
+
+    <p class="pista">
+      Para empezar de cero:
+      <button class="secundario" @click="borrarTodo">Borrar lo guardado</button>
+    </p>
+  </div>
+
+  <script>
+    const { createApp, ref, watch } = Vue
+
+    createApp({
+      setup() {
+        // ?? usa el valor de la derecha si el de la izquierda es null
+        const texto = ref(localStorage.getItem('bloc-texto') ?? '')
+        const guardado = ref(false)
+        let temporizador = null
+
+        watch(texto, (nuevo, viejo) => {
+          console.log(`El texto pasó de ${viejo.length} a ${nuevo.length} caracteres`)
+        })
+
+        watch(texto, (nuevo) => {
+          localStorage.setItem('bloc-texto', nuevo)
+
+          guardado.value = true
+          // Si seguís escribiendo, cancelamos el timer anterior para que el
+          // cartel no se apague a la mitad
+          clearTimeout(temporizador)
+          temporizador = setTimeout(() => { guardado.value = false }, 1500)
+        })
+
+        // Extra
+        watch(texto, (nuevo) => {
+          if (nuevo.toLowerCase().includes('vue')) console.log('💚')
+        })
+
+        const pendientesGuardados = localStorage.getItem('bloc-pendientes')
+        const pendientes = ref(
+          pendientesGuardados
+            ? JSON.parse(pendientesGuardados)
+            : [{ id: 1, texto: 'Terminar el ejercicio 08', hecho: false }]
+        )
+        const nuevoPendiente = ref('')
+
+        // Sin deep, Vue solo avisaría si reemplazás el array entero
+        // (pendientes.value = [...]), no con push ni al tildar un checkbox
+        watch(pendientes, (nuevos) => {
+          localStorage.setItem('bloc-pendientes', JSON.stringify(nuevos))
+        }, { deep: true })
+
+        function agregarPendiente() {
+          const t = nuevoPendiente.value.trim()
+          if (!t) return
+          pendientes.value.push({ id: Date.now(), texto: t, hecho: false })
+          nuevoPendiente.value = ''
+        }
+
+        function borrarTodo() {
+          localStorage.removeItem('bloc-texto')
+          localStorage.removeItem('bloc-pendientes')
+          location.reload()
+        }
+
+        return { texto, guardado, pendientes, nuevoPendiente, agregarPendiente, borrarTodo }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

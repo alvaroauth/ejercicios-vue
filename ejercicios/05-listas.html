@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>05 · Listas</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+</head>
+<body>
+<!--
+==========================================================================
+ EJERCICIO 05 · Lista del súper (v-for)
+==========================================================================
+
+ QUÉ VAS A APRENDER
+   - Repetir un elemento por cada ítem de un array con v-for
+   - Agregar y borrar ítems de una lista
+   - Eventos de teclado (@keyup.enter)
+
+ CÓMO FUNCIONA
+   v-for repite el elemento donde lo ponés, una vez por ítem:
+     <li v-for="fruta in frutas" :key="fruta">{{ fruta }}</li>
+
+   Si necesitás el índice (la posición):
+     <li v-for="(fruta, i) in frutas" :key="fruta">{{ i + 1 }}. {{ fruta }}</li>
+
+   Con un array de objetos:
+     <li v-for="p in personas" :key="p.id">{{ p.nombre }} tiene {{ p.edad }}</li>
+
+   :key le da a Vue un identificador ÚNICO de cada ítem, para que sepa cuál es
+   cuál cuando la lista cambia. Usá siempre un id si lo tenés.
+
+   Para cambiar la lista desde el JS (acordate del .value):
+     frutas.value.push('kiwi')                               agrega al final
+     frutas.value = frutas.value.filter(f => f !== 'kiwi')   se queda con todas menos 'kiwi'
+
+   @keyup.enter="agregar" llama a agregar cuando soltás la tecla Enter.
+
+   ⚠️ No pongas v-if y v-for en el MISMO elemento. Si necesitás los dos,
+      poné el v-if en un elemento de afuera (por ejemplo en el <ul>).
+
+   Mirá el ejemplo de los días, ya funciona.
+
+ TU TAREA
+   TODO 1: Mostrá cada producto de `productos` en un <li> con v-for (usá p.id como key).
+           Cada uno tiene que decir, por ejemplo: "Yerba × 2"
+   TODO 2: Conectá el input con `nuevoProducto` (v-model) y que el botón "Agregar"
+           llame a agregar(). Completá agregar(): que sume un objeto
+           { id: ..., nombre: ..., cantidad: 1 } a la lista y vacíe el input.
+           (para el id podés usar Date.now(), que da un número distinto cada milisegundo)
+   TODO 3: Que también se agregue apretando Enter en el input.
+   TODO 4: Que no se agreguen productos vacíos (texto vacío o solo espacios).
+           (pista: '   '.trim() devuelve '')
+   TODO 5: En cada <li>, un botón "✕" que borre ese producto. Completá borrar(id).
+   TODO 6: Si la lista queda vacía, mostrá "No hay nada en la lista 🛒" en vez del <ul>.
+
+ CÓMO SABÉS QUE ESTÁ BIEN
+   Podés agregar productos (con botón o Enter), borrarlos, y cuando borrás
+   todos aparece el mensaje de lista vacía.
+
+ DESAFÍO EXTRA
+   - Botones "−" y "+" en cada producto para cambiar su cantidad.
+     Si la cantidad llega a 0, que el producto se borre.
+   - Abajo de todo: "Total de unidades: X". Por ahora calculalo directo en el
+     template con .reduce(); en el ejercicio 07 vas a ver una forma mejor.
+==========================================================================
+-->
+
+  <div id="app">
+    <h1>05 · Lista del súper</h1>
+    <p>Repetir elementos con v-for</p>
+
+    <div class="caja">
+      <!-- Ejemplo que ya funciona: -->
+      <p>Días que hago las compras:
+        <span v-for="dia in dias" :key="dia" class="etiqueta">{{ dia }}</span>
+      </p>
+    </div>
+
+    <div class="caja">
+      <!-- TODO 2 y 3 -->
+      <div class="fila">
+        <input placeholder="¿Qué falta?">
+        <button>Agregar</button>
+      </div>
+
+      <!-- TODO 1, 5 y 6 -->
+      <ul class="lista">
+        <li>Acá van los productos</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref } = Vue
+
+    createApp({
+      setup() {
+        const dias = ref(['Lunes', 'Jueves', 'Sábado'])
+
+        const productos = ref([
+          { id: 1, nombre: 'Yerba', cantidad: 2 },
+          { id: 2, nombre: 'Dulce de leche', cantidad: 1 },
+          { id: 3, nombre: 'Pan', cantidad: 6 },
+        ])
+        const nuevoProducto = ref('')
+
+        function agregar() {
+          // TODO 2 y 4
+        }
+
+        function borrar(id) {
+          // TODO 5
+        }
+
+        return { dias, productos, nuevoProducto, agregar, borrar }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

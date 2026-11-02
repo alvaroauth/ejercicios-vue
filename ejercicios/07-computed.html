@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>07 · Computed</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+  <style>
+    .tabla { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    .tabla th, .tabla td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--borde); }
+    .tabla input { width: 70px; }
+    .resumen p { display: flex; justify-content: space-between; margin: 4px 0; }
+    .resumen .total { font-size: 1.3rem; font-weight: 700; border-top: 1px solid var(--borde); padding-top: 8px; }
+  </style>
+</head>
+<body>
+<!--
+==========================================================================
+ EJERCICIO 07 · Carrito de compras (computed)
+==========================================================================
+
+ QUÉ VAS A APRENDER
+   - Crear valores que se calculan solos a partir de otros datos: computed()
+
+ CÓMO FUNCIONA
+   Un computed es un valor CALCULADO a partir de otros datos reactivos.
+   Se actualiza solo cuando esos datos cambian:
+
+     const precio = ref(100)
+     const cantidad = ref(3)
+     const total = computed(() => precio.value * cantidad.value)
+
+   En el template se usa como cualquier dato:   {{ total }}
+   En el JS, igual que un ref:                  total.value
+
+   ¿Por qué no hacer la cuenta directo en el template?
+     - El template queda limpio y fácil de leer.
+     - Le ponés NOMBRE a una idea ("total", "productosFiltrados"...).
+     - Vue lo guarda en caché: solo lo recalcula si cambió algo de lo que usa.
+     - Lo podés usar en otros computed (total puede usar subtotal).
+
+   Regla: un computed CALCULA y DEVUELVE algo. No cambia otros datos adentro.
+
+   Pista para sumar arrays:
+     productos.value.reduce((acumulado, p) => acumulado + p.cantidad, 0)
+
+   Para mostrar plata ya tenés la función pesos():   pesos(1234)  da  "$ 1.234"
+   Mirá el ejemplo `cantidadProductos`, ya funciona.
+
+ TU TAREA
+   Ya tenés una tabla de productos donde se puede cambiar la cantidad.
+   TODO 1: computed `cantidadTotal`: la suma de todas las cantidades.
+   TODO 2: computed `subtotal`: la suma de precio × cantidad de cada producto.
+   TODO 3: computed `descuento`: si el subtotal supera $50.000, es el 10% del
+           subtotal; si no, 0.
+   TODO 4: computed `total`: subtotal menos descuento.
+           Mostrá los cuatro en el resumen (con pesos() donde sea plata).
+   TODO 5: El input de búsqueda ya está conectado a `busqueda`. Creá un computed
+           `productosFiltrados` que devuelva solo los productos cuyo nombre
+           incluya el texto buscado, sin importar mayúsculas. Usalo en el v-for
+           en lugar de `productos`.
+           (pista: .filter() + .toLowerCase() + .includes())
+   TODO 6: Si la búsqueda no encuentra nada, mostrá: Sin resultados para «___».
+
+ CÓMO SABÉS QUE ESTÁ BIEN
+   Cambiás una cantidad y el resumen se actualiza al instante. Si comprás un
+   termo, el subtotal pasa los $50.000 y aparece el descuento.
+
+ DESAFÍO EXTRA
+   Que el input de cantidad no permita negativos y que los productos con
+   cantidad 0 aparezcan en gris (vas a necesitar :class, del ejercicio 06).
+   Ojo: si borrás el número del input, la cantidad queda en '' (string vacío).
+   ¿Qué le pasa a tu suma? Probalo y arreglalo.
+==========================================================================
+-->
+
+  <div id="app">
+    <h1>07 · Carrito</h1>
+    <p>Valores calculados con computed()</p>
+
+    <div class="caja">
+      <input v-model="busqueda" placeholder="🔍 Buscar producto..." class="ancho">
+      <p class="pista">Ejemplo de computed: hay {{ cantidadProductos }} productos en el catálogo.</p>
+
+      <!-- TODO 5: usá productosFiltrados en vez de productos -->
+      <table class="tabla">
+        <thead>
+          <tr><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th></tr>
+        </thead>
+        <tbody>
+          <tr v-for="p in productos" :key="p.id">
+            <td>{{ p.nombre }}</td>
+            <td>{{ pesos(p.precio) }}</td>
+            <td><input type="number" min="0" v-model.number="p.cantidad"></td>
+            <td>{{ pesos(p.precio * p.cantidad) }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- TODO 6 -->
+    </div>
+
+    <!-- TODO 1 a 4: reemplazá los ? -->
+    <div class="caja resumen">
+      <p><span>Unidades</span> <span>?</span></p>
+      <p><span>Subtotal</span> <span>?</span></p>
+      <p><span>Descuento (10% arriba de $50.000)</span> <span>?</span></p>
+      <p class="total"><span>Total</span> <span>?</span></p>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref, computed } = Vue
+
+    createApp({
+      setup() {
+        const productos = ref([
+          { id: 1, nombre: 'Alfajor', precio: 900, cantidad: 3 },
+          { id: 2, nombre: 'Mate de calabaza', precio: 15000, cantidad: 1 },
+          { id: 3, nombre: 'Termo', precio: 32000, cantidad: 0 },
+          { id: 4, nombre: 'Bombilla', precio: 4500, cantidad: 1 },
+          { id: 5, nombre: 'Yerba 1 kg', precio: 5200, cantidad: 2 },
+        ])
+        const busqueda = ref('')
+
+        // pesos(1234) da "$ 1.234"
+        function pesos(numero) {
+          return '$ ' + numero.toLocaleString('es-AR')
+        }
+
+        // Ejemplo de computed
+        const cantidadProductos = computed(() => productos.value.length)
+
+        // TODO 1: const cantidadTotal = computed(() => ...)
+
+        // TODO 2:
+
+        // TODO 3:
+
+        // TODO 4:
+
+        // TODO 5:
+
+        return { productos, busqueda, pesos, cantidadProductos }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

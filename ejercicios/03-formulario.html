@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>03 · Formulario</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+  <style>
+    .bio { white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+<!--
+==========================================================================
+ EJERCICIO 03 · Formulario de perfil (v-model)
+==========================================================================
+
+ QUÉ VAS A APRENDER
+   - Conectar inputs con datos usando v-model
+
+ CÓMO FUNCIONA
+   v-model conecta un input con un ref EN LAS DOS DIRECCIONES:
+     - si escribís en el input, cambia el ref
+     - si cambia el ref (desde el JS), cambia lo que muestra el input
+
+   Funciona con todos los controles de formulario:
+     <input v-model="texto">                        string
+     <input v-model.trim="texto">                   .trim saca los espacios de los bordes
+     <input type="number" v-model.number="edad">    .number lo convierte a número
+     <input type="checkbox" v-model="acepto">       true / false
+     <select v-model="pais"> ... </select>          el value de la opción elegida
+     <textarea v-model="bio"></textarea>            string (ojo: NO pongas {{ }} adentro del textarea)
+
+   Mirá el ejemplo: el campo "Nombre" ya está conectado y aparece en la vista previa.
+
+ TU TAREA
+   Completá el formulario para que la vista previa de la derecha se actualice en vivo.
+   TODO 1: Creá un ref `edad` y conectalo al input de edad con v-model.number.
+           En la vista previa mostrá "___ años".
+   TODO 2: Creá un ref `ciudad` (que arranque en '') y conectalo al select.
+           Mostrala en la vista previa.
+   TODO 3: Creá un ref `bio` y conectalo al textarea. Mostrala en la vista previa
+           y, debajo del textarea, cuántos caracteres llevás: "37 / 140".
+   TODO 4: Creá un ref `publico` (true o false) y conectalo al checkbox.
+           En la vista previa mostrá "Perfil público" o "Perfil privado".
+   TODO 5: El botón "Limpiar" tiene que volver todo a los valores iniciales
+           (creá una función limpiar()). Fijate cómo los inputs se vacían solos:
+           eso es el "en las dos direcciones" de v-model.
+
+ CÓMO SABÉS QUE ESTÁ BIEN
+   Todo lo que escribís a la izquierda aparece al instante a la derecha.
+
+ DESAFÍO EXTRA
+   Agregá un grupo de checkboxes "Intereses" (Música, Deportes, Programación...).
+   Si varios checkboxes usan v-model con el MISMO ref que es un array, Vue mete
+   en el array el value de los que están tildados:
+       const intereses = ref([])
+       <input type="checkbox" value="Música" v-model="intereses">
+       <input type="checkbox" value="Deportes" v-model="intereses">
+   Mostralos en la vista previa separados por comas (pista: .join(', ')).
+==========================================================================
+-->
+
+  <div id="app">
+    <h1>03 · Formulario de perfil</h1>
+    <p>Conectar inputs con datos usando v-model</p>
+
+    <div class="dos-columnas">
+      <div class="caja formulario">
+        <!-- Ejemplo que ya funciona: -->
+        <label for="nombre">Nombre</label>
+        <input id="nombre" v-model="nombre" placeholder="Tu nombre">
+
+        <!-- TODO 1 -->
+        <label for="edad">Edad</label>
+        <input id="edad" type="number">
+
+        <!-- TODO 2 -->
+        <label for="ciudad">Ciudad</label>
+        <select id="ciudad">
+          <option disabled value="">Elegí una</option>
+          <option>Buenos Aires</option>
+          <option>Córdoba</option>
+          <option>Rosario</option>
+          <option>Mendoza</option>
+          <option>Otra</option>
+        </select>
+
+        <!-- TODO 3 -->
+        <label for="bio">Sobre vos</label>
+        <textarea id="bio" rows="3" maxlength="140"></textarea>
+        <!-- TODO 3: contador de caracteres -->
+
+        <!-- TODO 4 -->
+        <p>
+          <input id="publico" type="checkbox">
+          <label for="publico" class="en-linea">Perfil público</label>
+        </p>
+
+        <!-- TODO 5 -->
+        <button class="secundario">Limpiar</button>
+      </div>
+
+      <div class="caja">
+        <h2>Vista previa</h2>
+        <p><strong>{{ nombre || 'Sin nombre' }}</strong></p>
+        <!-- TODO 1: edad -->
+        <!-- TODO 2: ciudad -->
+        <!-- TODO 3: bio (usá class="bio" para que respete los saltos de línea) -->
+        <!-- TODO 4: público / privado -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref } = Vue
+
+    createApp({
+      setup() {
+        // Ejemplo
+        const nombre = ref('')
+
+        // TODO 1: const edad = ref(null)
+
+        // TODO 2:
+
+        // TODO 3:
+
+        // TODO 4:
+
+        // TODO 5: function limpiar() { ... }
+
+        return { nombre }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

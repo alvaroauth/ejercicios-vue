@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>04 · Condicionales (solución)</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+</head>
+<body>
+  <!-- SOLUCIÓN del ejercicio 04 (incluye el desafío extra) -->
+
+  <div id="app">
+    <h1>04 · Condicionales</h1>
+    <p>Mostrar u ocultar cosas con v-if, v-else y v-show</p>
+
+    <div class="caja">
+      <h2>A · Adivinanza</h2>
+      <p>¿Qué tiene dientes pero nunca muerde?</p>
+      <button class="secundario" @click="verRespuesta = !verRespuesta">
+        {{ verRespuesta ? 'Ocultar respuesta' : 'Mostrar respuesta' }}
+      </button>
+      <p v-if="verRespuesta">Un peine.</p>
+    </div>
+
+    <div class="caja">
+      <h2>B · Notas</h2>
+      <label for="nota">Nota del parcial (0 a 10)</label>
+      <input id="nota" type="number" v-model.number="nota">
+
+      <!-- La condición de "inválida" va primero: si no, una nota 15 diría "Promocionaste" -->
+      <p v-if="nota < 0 || nota > 10" class="error">Nota inválida</p>
+      <p v-else-if="nota >= 7">🎉 Promocionaste</p>
+      <p v-else-if="nota >= 4">✅ Aprobaste</p>
+      <p v-else>❌ Desaprobaste</p>
+    </div>
+
+    <div class="caja">
+      <h2>C · Sesión</h2>
+      <template v-if="logueado">
+        <p>Hola, {{ usuario }} 👋</p>
+        <button class="secundario" @click="logueado = false">Cerrar sesión</button>
+      </template>
+      <div v-else class="fila">
+        <input v-model.trim="usuario" placeholder="Tu nombre">
+        <button @click="logueado = true">Iniciar sesión</button>
+      </div>
+    </div>
+
+    <div class="caja">
+      <h2>D · v-if vs v-show</h2>
+      <p>
+        <input id="detalles" type="checkbox" v-model="verDetalles">
+        <label for="detalles" class="en-linea">Ver detalles</label>
+      </p>
+      <p v-if="verDetalles">Soy el párrafo con <strong>v-if</strong>: cuando me ocultan, desaparezco del HTML.</p>
+      <p v-show="verDetalles">Soy el párrafo con <strong>v-show</strong>: cuando me ocultan, sigo ahí con display: none.</p>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref } = Vue
+
+    createApp({
+      setup() {
+        const verRespuesta = ref(false)
+        const nota = ref(7)
+        const logueado = ref(false)
+        const usuario = ref('Ada')
+        const verDetalles = ref(true)
+
+        return { verRespuesta, nota, logueado, usuario, verDetalles }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

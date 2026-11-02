@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>04 · Condicionales</title>
+  <link rel="stylesheet" href="../estilos.css">
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.js"></script>
+</head>
+<body>
+<!--
+==========================================================================
+ EJERCICIO 04 · Condicionales (v-if, v-else, v-show)
+==========================================================================
+
+ QUÉ VAS A APRENDER
+   - Mostrar u ocultar partes de la página según los datos
+
+ CÓMO FUNCIONA
+   <p v-if="condicion">...</p>        se muestra solo si condicion es true
+   <p v-else-if="otra">...</p>        si no, y otra es true
+   <p v-else>...</p>                  si no se cumplió ninguna
+   (v-else-if y v-else tienen que ir JUSTO después del elemento con v-if)
+
+   <p v-show="condicion">...</p>      parecido, pero el elemento SIEMPRE existe:
+                                      Vue solo lo oculta con CSS (display: none)
+
+   ¿Cuál uso? v-if si algo cambia poco. v-show si se prende y apaga todo el tiempo.
+
+   Para que una condición abarque varios elementos sin agregar un div de más:
+     <template v-if="logueado">
+       <p>Hola</p>
+       <button>Salir</button>
+     </template>
+
+ TU TAREA
+   Parte A · Adivinanza
+   TODO 1: El botón tiene que alternar el ref `verRespuesta` (true ↔ false).
+           El párrafo de la respuesta solo se muestra si verRespuesta es true.
+           (pista: verRespuesta = !verRespuesta)
+   TODO 2: El texto del botón tiene que decir "Mostrar respuesta" u
+           "Ocultar respuesta" según corresponda.
+
+   Parte B · Notas (el input ya está conectado a `nota`)
+   TODO 3: Mostrá UNO solo de estos mensajes, con v-if / v-else-if / v-else:
+             7 o más        "🎉 Promocionaste"
+             de 4 a 6       "✅ Aprobaste"
+             menos de 4     "❌ Desaprobaste"
+   TODO 4: Si la nota es menor a 0 o mayor a 10, mostrá solamente "Nota inválida".
+           (pensá en qué lugar de la cadena tiene que ir esa condición)
+
+   Parte C · Sesión
+   TODO 5: Usando el ref `logueado`:
+             false   un botón "Iniciar sesión" (que pone logueado en true)
+             true    "Hola, {{ usuario }} 👋" + un botón "Cerrar sesión"
+           Usá <template v-if> para agrupar el saludo y el botón, y v-else para el otro.
+
+   Parte D · v-if vs v-show
+   TODO 6: Agregá dos párrafos: uno con v-if="verDetalles" y otro con v-show="verDetalles".
+           Destildá el checkbox y abrí el inspector (F12, pestaña Inspector o Elementos).
+           Buscá los párrafos: el de v-if DESAPARECE del HTML; el de v-show sigue
+           ahí con style="display: none;".
+
+ DESAFÍO EXTRA
+   En la parte C, agregá un input (con v-model) para escribir tu nombre antes
+   de iniciar sesión, y que el saludo use ese nombre.
+==========================================================================
+-->
+
+  <div id="app">
+    <h1>04 · Condicionales</h1>
+    <p>Mostrar u ocultar cosas con v-if, v-else y v-show</p>
+
+    <div class="caja">
+      <h2>A · Adivinanza</h2>
+      <p>¿Qué tiene dientes pero nunca muerde?</p>
+      <!-- TODO 1 y 2 -->
+      <button class="secundario">Mostrar respuesta</button>
+      <p>Un peine.</p>
+    </div>
+
+    <div class="caja">
+      <h2>B · Notas</h2>
+      <label for="nota">Nota del parcial (0 a 10)</label>
+      <input id="nota" type="number" v-model.number="nota">
+      <!-- TODO 3 y 4 -->
+    </div>
+
+    <div class="caja">
+      <h2>C · Sesión</h2>
+      <!-- TODO 5 -->
+    </div>
+
+    <div class="caja">
+      <h2>D · v-if vs v-show</h2>
+      <p>
+        <input id="detalles" type="checkbox" v-model="verDetalles">
+        <label for="detalles" class="en-linea">Ver detalles</label>
+      </p>
+      <!-- TODO 6 -->
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref } = Vue
+
+    createApp({
+      setup() {
+        const verRespuesta = ref(false)
+        const nota = ref(7)
+        const logueado = ref(false)
+        const usuario = ref('Ada')
+        const verDetalles = ref(true)
+
+        return { verRespuesta, nota, logueado, usuario, verDetalles }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>
